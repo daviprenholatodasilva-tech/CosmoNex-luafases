@@ -1,0 +1,54 @@
+<script>
+function faseDaLua() {
+    const hoje = new Date();
+    const inicio = new Date(2000, 0, 6);
+
+    const dias = (hoje - inicio) / 86400000;
+    const ciclo = dias % 29.53;
+
+    let fase = "";
+    let img = "";
+
+    if (ciclo < 1.84) {
+        fase = "Lua Nova";
+        img = "https://upload.wikimedia.org/wikipedia/commons/8/88/New_Moon.png";
+    } 
+    else if (ciclo < 5.53) {
+        fase = "Lua Crescente";
+        img = "https://upload.wikimedia.org/wikipedia/commons/2/2c/Waxing_Crescent_Moon.png";
+    } 
+    else if (ciclo < 9.22) {
+        fase = "Quarto Crescente";
+        img = "https://upload.wikimedia.org/wikipedia/commons/7/7d/First_Quarter_Moon.png";
+    } 
+    else if (ciclo < 12.91) {
+        fase = "Crescente Gibosa";
+        img = "https://upload.wikimedia.org/wikipedia/commons/d/dd/Waxing_Gibbous_Moon.png";
+    } 
+    else if (ciclo < 16.61) {
+        fase = "Lua Cheia";
+        img = "https://upload.wikimedia.org/wikipedia/commons/e/e1/Full_Moon.png";
+    } 
+    else if (ciclo < 20.30) {
+        fase = "Minguante Gibosa";
+        img = "https://upload.wikimedia.org/wikipedia/commons/5/5c/Waning_Gibbous_Moon.png";
+    } 
+    else if (ciclo < 23.99) {
+        fase = "Quarto Minguante";
+        img = "https://upload.wikimedia.org/wikipedia/commons/1/1e/Last_Quarter_Moon.png";
+    } 
+    else if (ciclo < 27.68) {
+        fase = "Lua Minguante";
+        img = "https://upload.wikimedia.org/wikipedia/commons/3/3c/Waning_Crescent_Moon.png";
+    } 
+    else {
+        fase = "Lua Nova";
+        img = "https://upload.wikimedia.org/wikipedia/commons/8/88/New_Moon.png";
+    }
+
+    document.getElementById("luaTexto").innerText = fase;
+    document.getElementById("luaImg").src = img;
+}
+
+faseDaLua();
+</script>
