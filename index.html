@@ -1,39 +1,40 @@
-<div style="background:black;color:white;padding:22px;border-radius:16px;max-width:600px;margin:auto;font-family:Arial;">
+<div style="background:black;color:white;padding:22px;border-radius:16px;max-width:380px;margin:auto;font-family:Arial;text-align:center;">
 
-<div style="font-size:26px;text-align:center;margin-bottom:10px;">
-🤖 CosmoBot Lunar
+<div style="font-size:26px;margin-bottom:10px;">
+🌕 Fase da Lua
 </div>
 
-<input id="msg" placeholder="Pergunte: lua, marte, universo..."
-style="width:100%;padding:12px;border:none;border-radius:10px;text-align:center;font-size:16px;">
+<div id="moon" style="font-size:70px;">🌑</div>
 
-<br><br>
+<div id="phase" style="font-size:20px;margin-top:10px;"></div>
 
-<button onclick="ask()"
-style="width:100%;padding:10px;border:none;border-radius:10px;cursor:pointer;">
-Perguntar
-</button>
-
-<div id="res" style="margin-top:20px;"></div>
+<div id="percent" style="margin-top:10px;font-size:18px;color:#ccc;"></div>
 
 </div>
 
 <script>
+function moonPhase(){
 
-function moonData(){
-
+// ciclo lunar real
 const SYNODIC = 29.530588853;
+
+// referência fixa (Lua nova conhecida)
 const BASE = new Date(Date.UTC(2000,0,6,18,14,0));
 
+// dias desde a referência
 let now = new Date();
 let days = (now - BASE) / 86400000;
 
+// posição no ciclo
 let phase = days % SYNODIC;
 if(phase < 0) phase += SYNODIC;
 
+// iluminação (0 a 1)
 let illumination = (1 - Math.cos(2 * Math.PI * phase / SYNODIC)) / 2;
+
 let percent = Math.round(illumination * 100);
 
+// nomes simples e estáveis
 let name = "";
 
 if(percent < 5) name = "Lua Nova 🌑";
@@ -42,36 +43,15 @@ else if(percent < 55) name = "Lua Cheia 🌕";
 else if(percent < 95) name = "Minguante 🌖";
 else name = "Lua Nova 🌑";
 
-return {percent, name};
+// emoji
+let emoji = illumination < 0.5 ? "🌒" : "🌕";
+
+document.getElementById("moon").innerHTML = emoji;
+document.getElementById("phase").innerHTML = name;
+document.getElementById("percent").innerHTML =
+"Iluminação: " + percent + "%";
 }
 
-function ask(){
-
-let q = document.getElementById("msg").value.toLowerCase();
-let m = moonData();
-
-let res = "";
-
-if(q.includes("lua")){
-
-res = `
-🌕 <b>Lua agora:</b><br>
-Fase: ${m.name}<br>
-Iluminação: ${m.percent}%
-`;
-
-}
-else if(q.includes("marte")){
-res = "🔴 Marte é o planeta vermelho do sistema solar.";
-}
-else if(q.includes("jupiter")){
-res = "🪐 Júpiter é o maior planeta do sistema solar.";
-}
-else{
-res = "🤖 Não entendi. Tente: lua, marte, jupiter";
-}
-
-document.getElementById("res").innerHTML = res;
-}
-
+moonPhase();
+setInterval(moonPhase, 300000);
 </script>
