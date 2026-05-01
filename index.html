@@ -1,76 +1,77 @@
 <div style="background:black;color:white;padding:22px;border-radius:16px;max-width:600px;margin:auto;font-family:Arial;">
 
-<div style="font-size:26px;margin-bottom:10px;text-align:center;">
-🤖 CosmoBot
+<div style="font-size:26px;text-align:center;margin-bottom:10px;">
+🤖 CosmoBot Lunar
 </div>
 
-<div style="text-align:center;color:#aaa;margin-bottom:10px;">
-Pergunte qualquer coisa do universo 🌍🪐
-</div>
-
-<input id="msg" placeholder="Digite sua pergunta..."
+<input id="msg" placeholder="Pergunte: lua, marte, universo..."
 style="width:100%;padding:12px;border:none;border-radius:10px;text-align:center;font-size:16px;">
 
 <br><br>
 
-<button onclick="askBot()"
-style="padding:10px 18px;border:none;border-radius:10px;cursor:pointer;width:100%;">
+<button onclick="ask()"
+style="width:100%;padding:10px;border:none;border-radius:10px;cursor:pointer;">
 Perguntar
 </button>
 
-<div id="res" style="margin-top:20px;text-align:left;"></div>
+<div id="res" style="margin-top:20px;"></div>
 
 </div>
 
 <script>
-async function askBot(){
 
-let q = document.getElementById("msg").value;
-if(!q) return;
+function moonData(){
 
-document.getElementById("res").innerHTML = "🤖 pensando no cosmos...";
+const SYNODIC = 29.530588853;
+const BASE = new Date(Date.UTC(2000,0,6,18,14,0));
 
-try{
+let now = new Date();
+let days = (now - BASE) / 86400000;
 
-// 🌍 Wikipedia
-let wiki = fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(q))
-.then(r => r.json())
-.catch(() => null);
+let phase = days % SYNODIC;
+if(phase < 0) phase += SYNODIC;
 
-// 🔎 DuckDuckGo
-let ddg = fetch("https://api.duckduckgo.com/?q=" + encodeURIComponent(q) + "&format=json&no_redirect=1&no_html=1")
-.then(r => r.json())
-.catch(() => null);
+let illumination = (1 - Math.cos(2 * Math.PI * phase / SYNODIC)) / 2;
+let percent = Math.round(illumination * 100);
 
-let [w, d] = await Promise.all([wiki, ddg]);
+let name = "";
 
-let reply = "";
+if(percent < 5) name = "Lua Nova 🌑";
+else if(percent < 45) name = "Crescente 🌒";
+else if(percent < 55) name = "Lua Cheia 🌕";
+else if(percent < 95) name = "Minguante 🌖";
+else name = "Lua Nova 🌑";
 
-if(w && w.extract){
-reply += `
-<div style="padding:10px;border:1px solid #333;border-radius:10px;margin-bottom:10px;">
-<div style="color:cyan;">📘 Wikipedia</div>
-<div style="margin-top:5px;">${w.extract}</div>
-</div>`;
+return {percent, name};
 }
 
-if(d && d.AbstractText){
-reply += `
-<div style="padding:10px;border:1px solid #333;border-radius:10px;">
-<div style="color:cyan;">🔎 Internet</div>
-<div style="margin-top:5px;">${d.AbstractText}</div>
-</div>`;
-}
+function ask(){
 
-if(!reply){
-reply = "❌ Não encontrei nada claro sobre isso no cosmos.";
-}
+let q = document.getElementById("msg").value.toLowerCase();
+let m = moonData();
 
-document.getElementById("res").innerHTML = reply;
+let res = "";
 
-}catch(e){
-document.getElementById("res").innerHTML = "Erro no CosmoBot ❌";
-}
+if(q.includes("lua")){
+
+res = `
+🌕 <b>Lua agora:</b><br>
+Fase: ${m.name}<br>
+Iluminação: ${m.percent}%
+`;
 
 }
+else if(q.includes("marte")){
+res = "🔴 Marte é o planeta vermelho do sistema solar.";
+}
+else if(q.includes("jupiter")){
+res = "🪐 Júpiter é o maior planeta do sistema solar.";
+}
+else{
+res = "🤖 Não entendi. Tente: lua, marte, jupiter";
+}
+
+document.getElementById("res").innerHTML = res;
+}
+
 </script>
