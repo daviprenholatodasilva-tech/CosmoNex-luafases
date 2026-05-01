@@ -1,128 +1,102 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CosmoBot PRO</title>
 
 <style>
-/* =========================
-   BASE GERAL
-========================= */
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:#000;
-overflow:hidden;
-}
+body{margin:0;font-family:Arial;background:#000}
 
-/* =========================
-   BOTÃO FLUTUANTE
-========================= */
-#openBtn{
+/* BOTÃO */
+#btn{
 position:fixed;
-bottom:20px;
-right:20px;
+bottom:15px;
+right:15px;
 background:#111;
-color:white;
-padding:14px 18px;
-border-radius:30px;
+color:#fff;
+padding:10px 14px;
+border-radius:25px;
 cursor:pointer;
-box-shadow:0 0 20px rgba(0,0,0,0.6);
+font-size:14px;
 z-index:9999;
 }
 
-/* =========================
-   JANELA DO CHAT
-========================= */
+/* CHAT MENOR */
 #chat{
 position:fixed;
-bottom:90px;
-right:20px;
-width:380px;
-height:560px;
+bottom:70px;
+right:15px;
+width:260px;
+height:360px;
 background:#0a0a0a;
 border:1px solid #222;
-border-radius:16px;
+border-radius:12px;
 display:none;
 flex-direction:column;
 overflow:hidden;
 z-index:9999;
 }
 
-/* HEADER */
-#header{
+#top{
 background:#111;
-color:white;
-padding:14px;
+color:#fff;
+padding:8px;
+font-size:13px;
 display:flex;
 justify-content:space-between;
-align-items:center;
-font-weight:bold;
 }
 
-/* MENSAGENS */
-#messages{
+/* MENSAGENS MENOR */
+#msgs{
 flex:1;
-padding:10px;
-overflow-y:auto;
-background:linear-gradient(#050505,#111);
+padding:6px;
+overflow:auto;
+font-size:12px;
 }
 
 .msg{
-padding:10px;
-margin:8px 0;
-border-radius:10px;
-font-size:14px;
+margin:5px 0;
+padding:6px;
+border-radius:8px;
 max-width:85%;
-line-height:1.4;
 }
 
-.user{
-background:#2d7cff;
-color:white;
-margin-left:auto;
-}
+.user{background:#2d7cff;color:#fff;margin-left:auto}
+.bot{background:#1f1f1f;color:#fff}
 
-.bot{
-background:#1f1f1f;
-color:white;
-}
-
-/* INPUT */
+/* INPUT MENOR */
 #inputArea{
 display:flex;
-padding:10px;
+padding:6px;
 background:#111;
 }
 
-#input{
+input{
 flex:1;
-padding:10px;
+padding:6px;
 border:none;
 outline:none;
-border-radius:8px;
+font-size:12px;
+border-radius:6px;
 }
 
-#send{
-margin-left:8px;
-padding:10px 14px;
-border:none;
+button{
 background:#2d7cff;
-color:white;
-border-radius:8px;
+border:none;
+color:#fff;
+padding:6px 10px;
+margin-left:5px;
+border-radius:6px;
+font-size:12px;
 cursor:pointer;
 }
 
-/* =========================
-   RESPONSIVO
-========================= */
+/* MOBILE AJUSTADO */
 @media(max-width:600px){
 #chat{
-width:95%;
-right:2.5%;
-height:80vh;
-bottom:70px;
+width:90%;
+right:5%;
+height:70vh;
 }
 }
 
@@ -131,147 +105,62 @@ bottom:70px;
 
 <body>
 
-<!-- BOTÃO -->
-<div id="openBtn">💬 CosmoBot PRO</div>
+<div id="btn">💬 Bot</div>
 
-<!-- CHAT -->
 <div id="chat">
 
-<div id="header">
-🚀 CosmoBot PRO
-<span onclick="closeChat()" style="cursor:pointer">✖</span>
+<div id="top">
+CosmoBot
+<span onclick="chat.style.display='none'">✖</span>
 </div>
 
-<div id="messages">
-<div class="msg bot">Olá 👋 Eu sou o CosmoBot PRO. Pergunte qualquer coisa!</div>
+<div id="msgs">
+<div class="msg bot">Oi 👋</div>
 </div>
 
 <div id="inputArea">
-<input id="input" placeholder="Digite sua pergunta...">
-<button id="send">➤</button>
+<input id="txt" placeholder="Pergunte...">
+<button onclick="send()">➤</button>
 </div>
 
 </div>
 
 <script>
 
-/* =========================
-   ELEMENTOS
-========================= */
-const chat = document.getElementById("chat");
-const openBtn = document.getElementById("openBtn");
-const messages = document.getElementById("messages");
-const input = document.getElementById("input");
-const sendBtn = document.getElementById("send");
+let btn=document.getElementById("btn");
+let chat=document.getElementById("chat");
+let msgs=document.getElementById("msgs");
+let txt=document.getElementById("txt");
 
-/* =========================
-   ABRIR / FECHAR
-========================= */
-openBtn.onclick = () => chat.style.display = "flex";
+btn.onclick=()=>chat.style.display="flex";
 
-function closeChat(){
-chat.style.display = "none";
+function add(t,c){
+msgs.innerHTML+=`<div class="msg ${c}">${t}</div>`;
+msgs.scrollTop=msgs.scrollHeight;
 }
 
-/* =========================
-   ENVIAR MENSAGEM
-========================= */
-sendBtn.onclick = sendMessage;
+function send(){
+let v=txt.value.trim();
+if(!v)return;
 
-input.addEventListener("keypress",(e)=>{
-if(e.key==="Enter") sendMessage();
-});
-
-function addMessage(text,type){
-const div = document.createElement("div");
-div.className = "msg "+type;
-div.innerHTML = text;
-messages.appendChild(div);
-messages.scrollTop = messages.scrollHeight;
-}
-
-/* =========================
-   LÓGICA PRINCIPAL
-========================= */
-function sendMessage(){
-
-let text = input.value.trim();
-if(!text) return;
-
-addMessage(text,"user");
-input.value="";
+add(v,"user");
+txt.value="";
 
 setTimeout(()=>{
-addMessage(botAI(text.toLowerCase()),"bot");
-},500);
-
+add(bot(v.toLowerCase()),"bot");
+},300);
 }
 
-/* =========================
-   “INTELIGÊNCIA” DO BOT
-========================= */
-function botAI(msg){
+function bot(m){
 
-/* SAUDAÇÕES */
-if(msg.includes("oi")||msg.includes("olá")||msg.includes("ola"))
-return "Olá 👋 Sou o CosmoBot PRO!";
+if(m.includes("oi")) return "Oi 👋";
+if(m.includes("terra")) return "🌍 Terra";
+if(m.includes("lua")) return "🌕 Lua";
+if(m.includes("sol")) return "☀️ Sol";
+if(m.includes("marte")) return "🔴 Marte";
+if(m.includes("jupiter")) return "🪐 Júpiter";
 
-/* ASTRONOMIA */
-if(msg.includes("terra"))
-return "🌍 Terra: terceiro planeta do Sistema Solar.";
-
-if(msg.includes("lua"))
-return "🌕 Lua: satélite natural da Terra.";
-
-if(msg.includes("sol"))
-return "☀️ Sol: estrela central do Sistema Solar.";
-
-if(msg.includes("marte"))
-return "🔴 Marte: planeta vermelho.";
-
-if(msg.includes("jupiter")||msg.includes("júpiter"))
-return "🪐 Júpiter: maior planeta do Sistema Solar.";
-
-if(msg.includes("saturno"))
-return "💫 Saturno: famoso por seus anéis.";
-
-if(msg.includes("universo"))
-return "🌌 O universo é infinito e cheio de galáxias.";
-
-/* TEMPO */
-if(msg.includes("hora"))
-return "⏰ Agora são: "+new Date().toLocaleTimeString();
-
-if(msg.includes("data"))
-return "📅 Hoje é: "+new Date().toLocaleDateString();
-
-/* MATEMÁTICA SIMPLES */
-if(msg.includes("2+2"))
-return "2 + 2 = 4";
-
-/* FINALIZAÇÃO */
-if(msg.includes("tchau"))
-return "Até mais 🚀 volte quando quiser!";
-
-/* IA GENÉRICA */
-return smartReply();
-}
-
-/* =========================
-   RESPOSTA INTELIGENTE
-========================= */
-function smartReply(){
-
-const respostas = [
-"🤔 Interessante... pode explicar melhor?",
-"🌌 Isso envolve ciência e lógica.",
-"🚀 Boa pergunta!",
-"📡 Não tenho certeza, mas posso aprender isso.",
-"🧠 Preciso de mais detalhes para responder.",
-"✨ Esse tema é complexo do universo."
-];
-
-return respostas[Math.floor(Math.random()*respostas.length)];
+return "🤔 Não entendi";
 }
 
 </script>
