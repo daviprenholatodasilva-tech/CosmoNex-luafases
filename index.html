@@ -1,54 +1,280 @@
-<script>
-function faseDaLua() {
-    const hoje = new Date();
-    const inicio = new Date(2000, 0, 6);
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CosmoBot PRO</title>
 
-    const dias = (hoje - inicio) / 86400000;
-    const ciclo = dias % 29.53;
-
-    let fase = "";
-    let img = "";
-
-    if (ciclo < 1.84) {
-        fase = "Lua Nova";
-        img = "https://upload.wikimedia.org/wikipedia/commons/8/88/New_Moon.png";
-    } 
-    else if (ciclo < 5.53) {
-        fase = "Lua Crescente";
-        img = "https://upload.wikimedia.org/wikipedia/commons/2/2c/Waxing_Crescent_Moon.png";
-    } 
-    else if (ciclo < 9.22) {
-        fase = "Quarto Crescente";
-        img = "https://upload.wikimedia.org/wikipedia/commons/7/7d/First_Quarter_Moon.png";
-    } 
-    else if (ciclo < 12.91) {
-        fase = "Crescente Gibosa";
-        img = "https://upload.wikimedia.org/wikipedia/commons/d/dd/Waxing_Gibbous_Moon.png";
-    } 
-    else if (ciclo < 16.61) {
-        fase = "Lua Cheia";
-        img = "https://upload.wikimedia.org/wikipedia/commons/e/e1/Full_Moon.png";
-    } 
-    else if (ciclo < 20.30) {
-        fase = "Minguante Gibosa";
-        img = "https://upload.wikimedia.org/wikipedia/commons/5/5c/Waning_Gibbous_Moon.png";
-    } 
-    else if (ciclo < 23.99) {
-        fase = "Quarto Minguante";
-        img = "https://upload.wikimedia.org/wikipedia/commons/1/1e/Last_Quarter_Moon.png";
-    } 
-    else if (ciclo < 27.68) {
-        fase = "Lua Minguante";
-        img = "https://upload.wikimedia.org/wikipedia/commons/3/3c/Waning_Crescent_Moon.png";
-    } 
-    else {
-        fase = "Lua Nova";
-        img = "https://upload.wikimedia.org/wikipedia/commons/8/88/New_Moon.png";
-    }
-
-    document.getElementById("luaTexto").innerText = fase;
-    document.getElementById("luaImg").src = img;
+<style>
+/* =========================
+   BASE GERAL
+========================= */
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#000;
+overflow:hidden;
 }
 
-faseDaLua();
+/* =========================
+   BOTÃO FLUTUANTE
+========================= */
+#openBtn{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#111;
+color:white;
+padding:14px 18px;
+border-radius:30px;
+cursor:pointer;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+z-index:9999;
+}
+
+/* =========================
+   JANELA DO CHAT
+========================= */
+#chat{
+position:fixed;
+bottom:90px;
+right:20px;
+width:380px;
+height:560px;
+background:#0a0a0a;
+border:1px solid #222;
+border-radius:16px;
+display:none;
+flex-direction:column;
+overflow:hidden;
+z-index:9999;
+}
+
+/* HEADER */
+#header{
+background:#111;
+color:white;
+padding:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:bold;
+}
+
+/* MENSAGENS */
+#messages{
+flex:1;
+padding:10px;
+overflow-y:auto;
+background:linear-gradient(#050505,#111);
+}
+
+.msg{
+padding:10px;
+margin:8px 0;
+border-radius:10px;
+font-size:14px;
+max-width:85%;
+line-height:1.4;
+}
+
+.user{
+background:#2d7cff;
+color:white;
+margin-left:auto;
+}
+
+.bot{
+background:#1f1f1f;
+color:white;
+}
+
+/* INPUT */
+#inputArea{
+display:flex;
+padding:10px;
+background:#111;
+}
+
+#input{
+flex:1;
+padding:10px;
+border:none;
+outline:none;
+border-radius:8px;
+}
+
+#send{
+margin-left:8px;
+padding:10px 14px;
+border:none;
+background:#2d7cff;
+color:white;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media(max-width:600px){
+#chat{
+width:95%;
+right:2.5%;
+height:80vh;
+bottom:70px;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- BOTÃO -->
+<div id="openBtn">💬 CosmoBot PRO</div>
+
+<!-- CHAT -->
+<div id="chat">
+
+<div id="header">
+🚀 CosmoBot PRO
+<span onclick="closeChat()" style="cursor:pointer">✖</span>
+</div>
+
+<div id="messages">
+<div class="msg bot">Olá 👋 Eu sou o CosmoBot PRO. Pergunte qualquer coisa!</div>
+</div>
+
+<div id="inputArea">
+<input id="input" placeholder="Digite sua pergunta...">
+<button id="send">➤</button>
+</div>
+
+</div>
+
+<script>
+
+/* =========================
+   ELEMENTOS
+========================= */
+const chat = document.getElementById("chat");
+const openBtn = document.getElementById("openBtn");
+const messages = document.getElementById("messages");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("send");
+
+/* =========================
+   ABRIR / FECHAR
+========================= */
+openBtn.onclick = () => chat.style.display = "flex";
+
+function closeChat(){
+chat.style.display = "none";
+}
+
+/* =========================
+   ENVIAR MENSAGEM
+========================= */
+sendBtn.onclick = sendMessage;
+
+input.addEventListener("keypress",(e)=>{
+if(e.key==="Enter") sendMessage();
+});
+
+function addMessage(text,type){
+const div = document.createElement("div");
+div.className = "msg "+type;
+div.innerHTML = text;
+messages.appendChild(div);
+messages.scrollTop = messages.scrollHeight;
+}
+
+/* =========================
+   LÓGICA PRINCIPAL
+========================= */
+function sendMessage(){
+
+let text = input.value.trim();
+if(!text) return;
+
+addMessage(text,"user");
+input.value="";
+
+setTimeout(()=>{
+addMessage(botAI(text.toLowerCase()),"bot");
+},500);
+
+}
+
+/* =========================
+   “INTELIGÊNCIA” DO BOT
+========================= */
+function botAI(msg){
+
+/* SAUDAÇÕES */
+if(msg.includes("oi")||msg.includes("olá")||msg.includes("ola"))
+return "Olá 👋 Sou o CosmoBot PRO!";
+
+/* ASTRONOMIA */
+if(msg.includes("terra"))
+return "🌍 Terra: terceiro planeta do Sistema Solar.";
+
+if(msg.includes("lua"))
+return "🌕 Lua: satélite natural da Terra.";
+
+if(msg.includes("sol"))
+return "☀️ Sol: estrela central do Sistema Solar.";
+
+if(msg.includes("marte"))
+return "🔴 Marte: planeta vermelho.";
+
+if(msg.includes("jupiter")||msg.includes("júpiter"))
+return "🪐 Júpiter: maior planeta do Sistema Solar.";
+
+if(msg.includes("saturno"))
+return "💫 Saturno: famoso por seus anéis.";
+
+if(msg.includes("universo"))
+return "🌌 O universo é infinito e cheio de galáxias.";
+
+/* TEMPO */
+if(msg.includes("hora"))
+return "⏰ Agora são: "+new Date().toLocaleTimeString();
+
+if(msg.includes("data"))
+return "📅 Hoje é: "+new Date().toLocaleDateString();
+
+/* MATEMÁTICA SIMPLES */
+if(msg.includes("2+2"))
+return "2 + 2 = 4";
+
+/* FINALIZAÇÃO */
+if(msg.includes("tchau"))
+return "Até mais 🚀 volte quando quiser!";
+
+/* IA GENÉRICA */
+return smartReply();
+}
+
+/* =========================
+   RESPOSTA INTELIGENTE
+========================= */
+function smartReply(){
+
+const respostas = [
+"🤔 Interessante... pode explicar melhor?",
+"🌌 Isso envolve ciência e lógica.",
+"🚀 Boa pergunta!",
+"📡 Não tenho certeza, mas posso aprender isso.",
+"🧠 Preciso de mais detalhes para responder.",
+"✨ Esse tema é complexo do universo."
+];
+
+return respostas[Math.floor(Math.random()*respostas.length)];
+}
+
 </script>
+
+</body>
+</html>
